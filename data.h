@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #ifndef LIBRARY_DATA_H
 #define LIBRARY_DATA_H
 
@@ -34,7 +36,7 @@ int add_book(BookNode **head, const char *isbn, const char *title, const char *a
  * @param isbn ISBN编号
  * @return BookNode* 找到的节点指针，NULL=未找到
  */
-BookNode *search_by_isbn(BookNode *head, const char *isbn);
+BookNode* search_by_isbn(BookNode *head, const char *isbn);
 
 /**
  * @brief 按关键词（书名/作者）模糊搜索
@@ -43,7 +45,7 @@ BookNode *search_by_isbn(BookNode *head, const char *isbn);
  * @param keyword 搜索关键词
  * @return BookNode* 匹配结果链表的头指针
  */
-BookNode *search_by_keyword(BookNode *head, const char *keyword);
+BookNode* search_by_keyword(BookNode *head, const char *keyword);
 
 /**
  * @brief 销毁整个链表，释放内存
