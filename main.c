@@ -27,7 +27,7 @@ void print_help() {
 /**
  * @brief 主命令解析循环
  */
-void command_loop(BookNode **head) {
+void command_loop(BookNode** head) {
     char command[100];
 
     while (1) {
@@ -72,10 +72,10 @@ void command_loop(BookNode **head) {
 }
 
 int main() {
-    BookNode *head = NULL;
+    BookNode* head = NULL;
 
     // 尝试从持久化文件加载数据
-    BookNode *loaded = load_books_from_json(PERSISTENCE_FILE);
+    BookNode* loaded = load_books_from_json(PERSISTENCE_FILE);
     if (loaded) {
         head = loaded;
         printf("Loaded library data from %s\n", PERSISTENCE_FILE);
