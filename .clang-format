@@ -1,0 +1,12 @@
+BasedOnStyle: LLVM        # 基于 LLVM 风格
+IndentWidth: 4            # 4 空格缩进（C 项目常见）
+TabWidth: 4
+UseTab: Never             # 不用 tab，统一用空格
+
+ColumnLimit: 0            # 每行最多字符不限制
+BreakBeforeBraces: Attach # if (...) {  这种 K&R 风格括号
+
+PointerAlignment: Left      # int* p; 而不是 int *p;
+SpaceAfterCStyleCast: true  # (int) x，而不是 (int)x
+AlignConsecutiveDeclarations: true  # 连续变量对齐，更整齐
+AlignConsecutiveAssignments: true
