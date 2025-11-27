@@ -54,4 +54,13 @@ BookNode* search_by_keyword(BookNode *head, const char *keyword);
  */
 void destroy_list(BookNode *head);
 
+/**
+ * @brief 通过ISBN删除图书
+ *
+ * @param head 链表头指针的指针
+ * @param isbn ISBN编号
+ * @return int 0=成功删除, -1=未找到
+ */
+int delete_by_isbn(BookNode **head, const char *isbn);
+
 #endif // LIBRARY_DATA_H

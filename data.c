@@ -101,3 +101,32 @@ void destroy_list(BookNode *head){
         free(temp);  // 释放当前节点的内存
     }
 }
+
+int delete_by_isbn(BookNode **head, const char *isbn){
+    // 处理链表为空的情况
+    if (*head == NULL) {
+        return -1;  // 链表为空，未找到
+    }
+    
+    // 如果要删除的是头节点
+    if (strcmp((*head)->isbn, isbn) == 0) {
+        BookNode *temp = *head;
+        *head = (*head)->next;
+        free(temp);
+        return 0;  // 成功删除
+    }
+    
+    // 在链表中查找并删除
+    BookNode *current = *head;
+    while (current->next != NULL) {
+        if (strcmp(current->next->isbn, isbn) == 0) {
+            BookNode *temp = current->next;
+            current->next = current->next->next;
+            free(temp);
+            return 0;  // 成功删除
+        }
+        current = current->next;
+    }
+    
+    return -1;  // 未找到该ISBN
+}
