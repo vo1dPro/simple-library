@@ -44,7 +44,7 @@ void command_loop(BookNode** head) {
 
         // 解析命令
         char cmd[20];
-        sscanf_s(command, "%s", cmd, 20);
+        sscanf(command, "%s", cmd, 20);
 
         if (strcmp(cmd, "exit") == 0) {
             break;
