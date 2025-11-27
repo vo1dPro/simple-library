@@ -1,6 +1,7 @@
 #include "data.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 int add_book(BookNode **head, const char *isbn, const char *title, const char *author, int stock){
     // 检查ISBN是否已存在
@@ -103,30 +104,120 @@ void destroy_list(BookNode *head){
 }
 
 int delete_by_isbn(BookNode **head, const char *isbn){
-    // 处理链表为空的情况
+    /**
+     * 根据ISBN删除单本图书
+     * 算法：先检查头节点，然后遍历链表查找目标节点，找到后删除并释放内存
+     * 时间复杂度：O(n)
+     */
+    
+    // 链表为空，无法删除
     if (*head == NULL) {
-        return -1;  // 链表为空，未找到
+        return -1;
     }
     
-    // 如果要删除的是头节点
+    // 特殊情况：删除的是头节点
     if (strcmp((*head)->isbn, isbn) == 0) {
         BookNode *temp = *head;
-        *head = (*head)->next;
-        free(temp);
-        return 0;  // 成功删除
+        *head = (*head)->next;  // 更新头指针
+        free(temp);  // 释放旧头节点的内存
+        return 0;
     }
     
-    // 在链表中查找并删除
+    // 一般情况：在链表中查找并删除
     BookNode *current = *head;
     while (current->next != NULL) {
         if (strcmp(current->next->isbn, isbn) == 0) {
             BookNode *temp = current->next;
-            current->next = current->next->next;
-            free(temp);
-            return 0;  // 成功删除
+            current->next = current->next->next;  // 跳过要删除的节点
+            free(temp);  // 释放目标节点的内存
+            return 0;
         }
         current = current->next;
     }
     
-    return -1;  // 未找到该ISBN
+    return -1;  // 遍历完整个链表仍未找到
+}
+
+int update_title(BookNode *head, const char *isbn, const char *new_title){
+    /**
+     * 根据ISBN查找图书，修改其书名
+     * 步骤：
+     *   1. 调用search_by_isbn查找目标图书
+     *   2. 如果找到，使用strncpy安全地复制新书名（防止缓冲区溢出）
+     *   3. 确保字符串以NULL结尾
+     * 时间复杂度：O(n)，其中n为链表长度
+     */
+    
+    BookNode *book = search_by_isbn(head, isbn);
+    
+    if (book == NULL) {
+        return -1;  // ISBN不存在
+    }
+    
+    // 使用strncpy防止缓冲区溢出，保留字符串结尾空间
+    strncpy(book->title, new_title, sizeof(book->title) - 1);
+    book->title[sizeof(book->title) - 1] = '\0';  // 强制添加字符串结尾符
+    return 0;  // 修改成功
+}
+
+int update_author(BookNode *head, const char *isbn, const char *new_author){
+    /**
+     * 根据ISBN查找图书，修改其作者
+     * 步骤：
+     *   1. 调用search_by_isbn查找目标图书
+     *   2. 如果找到，使用strncpy安全地复制新作者名（防止缓冲区溢出）
+     *   3. 确保字符串以NULL结尾
+     * 时间复杂度：O(n)，其中n为链表长度
+     */
+    
+    BookNode *book = search_by_isbn(head, isbn);
+    
+    if (book == NULL) {
+        return -1;  // ISBN不存在
+    }
+    
+    // 使用strncpy防止缓冲区溢出，保留字符串结尾空间
+    strncpy(book->author, new_author, sizeof(book->author) - 1);
+    book->author[sizeof(book->author) - 1] = '\0';  // 强制添加字符串结尾符
+    return 0;  // 修改成功
+}
+
+int update_stock(BookNode *head, const char *isbn, int new_stock){
+    /**
+     * 根据ISBN查找图书，修改其库存量
+     * 步骤：
+     *   1. 调用search_by_isbn查找目标图书
+     *   2. 如果找到，直接更新库存数值（整数操作，无需特殊处理）
+     * 时间复杂度：O(n)，其中n为链表长度
+     */
+    
+    BookNode *book = search_by_isbn(head, isbn);
+    
+    if (book == NULL) {
+        return -1;  // ISBN不存在
+    }
+    
+    // 直接更新库存量
+    book->stock = new_stock;
+    return 0;  // 修改成功
+}
+
+int update_loaned(BookNode *head, const char *isbn, int new_loaned){
+    /**
+     * 根据ISBN查找图书，修改其借阅量
+     * 步骤：
+     *   1. 调用search_by_isbn查找目标图书
+     *   2. 如果找到，直接更新借阅数值（整数操作，无需特殊处理）
+     * 时间复杂度：O(n)，其中n为链表长度
+     */
+    
+    BookNode *book = search_by_isbn(head, isbn);
+    
+    if (book == NULL) {
+        return -1;  // ISBN不存在
+    }
+    
+    // 直接更新借阅量
+    book->loaned = new_loaned;
+    return 0;  // 修改成功
 }
