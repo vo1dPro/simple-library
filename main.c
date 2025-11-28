@@ -12,16 +12,16 @@
 void print_help() {
     printf("Library Management System\n");
     printf("Commands:\n");
-    printf("  add <isbn> <title> <author> <stock>  - Add a new book\n");
-    printf("  search <keyword>                      - Search by keyword\n");
-    printf("  isbn <isbn>                           - Search by ISBN\n");
-    printf("  loan <isbn> <quantity>                - Record a loan\n");
-    printf("  sort stock                            - Sort by stock\n");
-    printf("  sort loan                             - Sort by loan count\n");
-    printf("  report                                - Generate report\n");
-    printf("  export csv <filename>                 - Export to CSV\n");
-    printf("  export json <filename>                - Export to JSON\n");
-    printf("  exit                                  - Exit program\n");
+    printf("  add <isbn> <title> <author> <stock>   - 添加新图书\n");
+    printf("  search <keyword>                      - 通过关键词搜索\n");
+    printf("  isbn <isbn>                           - 通过ISBN搜索\n");
+    printf("  loan <isbn> <quantity>                - 记录借阅\n");
+    printf("  sort stock                            - 按库存量降序排序\n");
+    printf("  sort loan                             - 按借阅数降序排序\n");
+    printf("  report                                - 生成报告\n");
+    printf("  export csv <filename>                 - 导出为CSV文件\n");
+    printf("  export json <filename>                - 导出为JSON文件\n");
+    printf("  exit                                  - 退出程序\n");
 }
 
 /**
@@ -66,7 +66,7 @@ void command_loop(BookNode** head) {
         } else if (strncmp(cmd, "export", 6) == 0) {
             // TODO: 解析导出命令
         } else {
-            printf("Unknown command. Type 'help' for usage.\n");
+            printf("未知命令。输入 'help' 查看用法。\n");
         }
     }
 }
@@ -78,23 +78,23 @@ int main() {
     BookNode* loaded = load_books_from_json(PERSISTENCE_FILE);
     if (loaded) {
         head = loaded;
-        printf("Loaded library data from %s\n", PERSISTENCE_FILE);
+        printf("已从 %s 加载图书数据。\n", PERSISTENCE_FILE);
     } else {
-        printf("No existing library data found. Starting with empty library.\n");
+        printf("未找到存在的图书数据。将以空数据库开始。\n");//No existing library data found. Starting with empty library.
     }
 
     // 加载历史借阅记录
     load_loans(head);
 
-    printf("Library Management System (Type 'help' for commands)\n");
+    printf("图书管理系统（输入 'help' 查看命令）\n");
     command_loop(&head);
 
     // 退出前保存数据
-    printf("Saving library data to %s...\n", PERSISTENCE_FILE);
+    printf("正在将图书数据保存至 %s ...\n", PERSISTENCE_FILE);
     if (persist_books_json(PERSISTENCE_FILE, head) == 0) {
-        printf("Data saved successfully.\n");
+        printf("保存数据成功。\n");
     } else {
-        printf("Warning: Failed to save library data.\n");
+        printf("警告：保存数据失败。\n");
     }
 
     // 清理资源
