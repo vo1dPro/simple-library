@@ -4,7 +4,7 @@
 #include <string.h>  // 字符串操作（后续函数会用到）
 #include <errno.h>   // perror依赖的头文件
 
-void log_loan(const char *isbn, int quantity {
+void log_loan(const char *isbn, int quantity) {
     // 以追加模式打开二进制文件
   FILE *fp = fopen("loans.bin", "ab");
     if (fp == NULL) {
