@@ -54,4 +54,53 @@ BookNode* search_by_keyword(BookNode *head, const char *keyword);
  */
 void destroy_list(BookNode *head);
 
+/**
+ * @brief 通过ISBN删除图书
+ *
+ * @param head 链表头指针的指针
+ * @param isbn ISBN编号
+ * @return int 0=成功删除, -1=未找到
+ */
+int delete_by_isbn(BookNode **head, const char *isbn);
+
+/**
+ * @brief 通过ISBN修改图书的书名
+ *
+ * @param head 链表头指针
+ * @param isbn ISBN编号
+ * @param new_title 新的书名
+ * @return int 0=修改成功, -1=ISBN未找到
+ */
+int update_title(BookNode *head, const char *isbn, const char *new_title);
+
+/**
+ * @brief 通过ISBN修改图书的作者
+ *
+ * @param head 链表头指针
+ * @param isbn ISBN编号
+ * @param new_author 新的作者名
+ * @return int 0=修改成功, -1=ISBN未找到
+ */
+int update_author(BookNode *head, const char *isbn, const char *new_author);
+
+/**
+ * @brief 通过ISBN修改图书的库存量
+ *
+ * @param head 链表头指针
+ * @param isbn ISBN编号
+ * @param new_stock 新的库存量
+ * @return int 0=修改成功, -1=ISBN未找到
+ */
+int update_stock(BookNode *head, const char *isbn, int new_stock);
+
+/**
+ * @brief 通过ISBN修改图书的借阅量
+ *
+ * @param head 链表头指针
+ * @param isbn ISBN编号
+ * @param new_loaned 新的借阅量
+ * @return int 0=修改成功, -1=ISBN未找到
+ */
+int update_loaned(BookNode *head, const char *isbn, int new_loaned);
+
 #endif // LIBRARY_DATA_H
