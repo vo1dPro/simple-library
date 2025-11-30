@@ -72,6 +72,9 @@ void command_loop(BookNode** head) {
 }
 
 int main() {
+    // 设置控制台编码为UTF-8以解决中文乱码问题
+    system("chcp 65001");
+    
     BookNode* head = NULL;
 
     // 尝试从持久化文件加载数据
