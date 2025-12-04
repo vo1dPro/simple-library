@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "data.h"
 
 // TODO: 实现图书添加（检查ISBN重复、动态分配内存）
