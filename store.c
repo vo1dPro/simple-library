@@ -51,12 +51,6 @@ void log_loan(const char *isbn, int quantity) {
 }
 
 
-
-/**
- * @brief 从二进制文件加载历史借阅记录，更新图书库存与借阅量
- * @param head 图书链表头指针（非空）
- */
-
 /**
  * @brief 从二进制文件加载历史借阅记录，更新图书库存与借阅量
  * @param head 图书链表头指针（非空）
@@ -220,10 +214,10 @@ void export_to_csv(const char *filename, BookNode *head) {
     if (fclose(fp) != 0) {
         perror("Failed to close CSV file");
     } else {
-        fprintf(stdout, "Successfully exported %d books to %s\n", get_book_count(head), filename);
+        // 修复bug：删除未定义的get_book_count调用，保留基础提示
+        fprintf(stdout, "Successfully exported books to %s\n", filename);
     }
 }
-
 
 
 /**
@@ -276,7 +270,7 @@ void export_to_json(const char *filename, BookNode *head) {
     if (fclose(fp) != 0) {
         perror("Failed to close JSON file");
     } else {
-        fprintf(stdout, "Successfully exported %d books to %s\n", get_book_count(head), filename);
+        // 修复bug：删除未定义的get_book_count调用，保留基础提示
+        fprintf(stdout, "Successfully exported books to %s\n", filename);
     }
 }
-
