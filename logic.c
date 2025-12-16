@@ -36,7 +36,8 @@ void sort_by_stock(BookNode** head) {
     BookNode* pivot = *head; // 选择第一个节点作为基准节点
     BookNode* left = NULL;   // 小于基准节点的子链表
     BookNode* right = NULL;  // 大于等于基准节点的子链表
-    for(BookNode* current = (*head)->next; current != NULL; current = current->next) {
+    BookNode* current = (*head)->next;
+    while(current != NULL) {
         BookNode* next = current->next; // 先保存下一个节点
         // 根据库存量将节点分配到左右子链表，
         // 如果库存量小于基准节点，则插入左子链表，否则插入右子链表
@@ -49,6 +50,7 @@ void sort_by_stock(BookNode** head) {
             current->next = right;
             right = current;
         }
+        current = next; // 使用保存的下一个节点
     }
 
     // 递归排序左右子链表
@@ -89,7 +91,8 @@ void sort_by_loan(BookNode** head) {
     BookNode* pivot = *head; // 选择第一个节点作为基准节点
     BookNode* left = NULL;   // 大于基准节点的子链表
     BookNode* right = NULL;  // 小于等于基准节点的子链表
-    for(BookNode* current = (*head)->next; current != NULL; current = current->next) {
+    BookNode* current = (*head)->next;
+    while(current != NULL) {
         BookNode* next = current->next; // 先保存下一个节点
         // 根据借阅量将节点分配到左右子链表，
         // 如果借阅量大于基准节点，则插入左子链表，否则插入右子链表
@@ -102,6 +105,7 @@ void sort_by_loan(BookNode** head) {
             current->next = right;
             right = current;
         }
+        current = next; // 使用保存的下一个节点
     }
 
     // 递归排序左右子链表
