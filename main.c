@@ -51,20 +51,112 @@ void command_loop(BookNode** head) {
         } else if (strcmp(cmd, "help") == 0) {
             print_help();
         } else if (strcmp(cmd, "add") == 0) {
-            // TODO: 解析add命令参数
-            // 用sscanf提取参数，调用add_book
+            // 解析add命令参数
+            char isbn[20], title[100], author[50];
+            int stock;
+            if (sscanf(command, "add %s %s %s %d", isbn, title, author, &stock) == 4) {
+                int result = add_book(head, isbn, title, author, stock);
+                if (result == 0) {
+                    printf("图书添加成功。\n");
+                } else if (result == -1) {
+                    printf("ISBN已存在，无法添加。\n");
+                } else {
+                    printf("添加失败，未知错误。\n");
+                }
+            } else {
+                printf("参数格式错误。用法: add <isbn> <title> <author> <stock>\n");
+            }
         } else if (strcmp(cmd, "search") == 0) {
-            // TODO: 解析搜索关键词，调用search_by_keyword
+            // 解析搜索关键词，调用search_by_keyword
+            char keyword[100];
+            if (sscanf(command, "search %s", keyword) == 1) {
+                BookNode* results = search_by_keyword(*head, keyword);
+                if (results == NULL) {
+                    printf("未找到匹配的图书。\n");
+                } else {
+                    printf("搜索结果：\n");
+                    printf("ISBN\t\t书名\t\t\t作者\t\t库存\t借阅\n");
+                    BookNode* current = results;
+                    while (current != NULL) {
+                        printf("%s\t%s\t\t%s\t\t%d\t%d\n", 
+                               current->isbn, current->title, current->author, current->stock, current->loaned);
+                        current = current->next;
+                    }
+                    destroy_list(results); // 释放结果链表内存
+                }
+            } else {
+                printf("参数格式错误。用法: search <keyword>\n");
+            }
         } else if (strcmp(cmd, "isbn") == 0) {
-            // TODO: 解析ISBN，调用search_by_isbn
+            // 解析ISBN，调用search_by_isbn
+            char isbn[20];
+            if (sscanf(command, "isbn %s", isbn) == 1) {
+                BookNode* book = search_by_isbn(*head, isbn);
+                if (book == NULL) {
+                    printf("未找到ISBN为 %s 的图书。\n", isbn);
+                } else {
+                    printf("找到图书：\n");
+                    printf("ISBN: %s\n", book->isbn);
+                    printf("书名: %s\n", book->title);
+                    printf("作者: %s\n", book->author);
+                    printf("库存: %d\n", book->stock);
+                    printf("借阅: %d\n", book->loaned);
+                }
+            } else {
+                printf("参数格式错误。用法: isbn <isbn>\n");
+            }
         } else if (strcmp(cmd, "loan") == 0) {
-            // TODO: 解析loan命令，调用log_loan
+            // 解析loan命令，调用log_loan
+            char isbn[20];
+            int quantity;
+            if (sscanf(command, "loan %s %d", isbn, &quantity) == 2) {
+                BookNode* book = search_by_isbn(*head, isbn);
+                if (book == NULL) {
+                    printf("未找到ISBN为 %s 的图书。\n", isbn);
+                } else if (book->stock < quantity) {
+                    printf("库存不足，当前库存：%d\n", book->stock);
+                } else {
+                    log_loan(isbn, quantity);
+                    book->stock -= quantity;
+                    book->loaned += quantity;
+                    printf("借阅记录成功。\n");
+                    printf("剩余库存：%d\n", book->stock);
+                }
+            } else {
+                printf("参数格式错误。用法: loan <isbn> <quantity>\n");
+            }
         } else if (strcmp(cmd, "sort") == 0) {
-            // TODO: 解析排序类型
+            // 解析排序类型
+            char sort_type[20];
+            if (sscanf(command, "sort %s", sort_type) == 1) {
+                if (strcmp(sort_type, "stock") == 0) {
+                    sort_by_stock(head);
+                    printf("按库存升序排序完成。\n");
+                } else if (strcmp(sort_type, "loan") == 0) {
+                    sort_by_loan(head);
+                    printf("按借阅量降序排序完成。\n");
+                } else {
+                    printf("未知的排序类型。用法: sort <stock|loan>\n");
+                }
+            } else {
+                printf("参数格式错误。用法: sort <stock|loan>\n");
+            }
         } else if (strcmp(cmd, "report") == 0) {
             generate_report(*head);
         } else if (strncmp(cmd, "export", 6) == 0) {
-            // TODO: 解析导出命令
+            // 解析导出命令
+            char export_type[20], filename[100];
+            if (sscanf(command, "export %s %s", export_type, filename) == 2) {
+                if (strcmp(export_type, "csv") == 0) {
+                    export_to_csv(filename, *head);
+                } else if (strcmp(export_type, "json") == 0) {
+                    export_to_json(filename, *head);
+                } else {
+                    printf("未知的导出类型。用法: export <csv|json> <filename>\n");
+                }
+            } else {
+                printf("参数格式错误。用法: export <csv|json> <filename>\n");
+            }
         } else {
             printf("未知命令。输入 'help' 查看用法。\n");
         }

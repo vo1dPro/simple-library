@@ -1,0 +1,59 @@
+# 图书管理系统输入示例
+
+以下是完整的输入序列，展示如何使用系统的所有功能：
+
+## 1. 添加图书
+add 9787111520124 CProgramming Kernighan 10
+add 9787111608333 PythonCrashCourse Matthes 8
+add 9787115526630 JavaScriptGuide Duckett 15
+
+## 2. 查看帮助（可选）
+help
+
+## 3. 关键词搜索
+search CProgram
+search Pyth
+search Jav
+
+## 4. ISBN精确搜索
+isbn 9787111520124
+
+## 5. 记录借阅
+loan 9787111520124 2
+loan 9787111608333 3
+
+## 6. 查看当前库存
+search CProgramming
+search Python
+
+## 7. 按库存排序
+sort stock
+export csv library_export.csv
+
+## 8. 按借阅量排序
+sort loan
+export csv library_export.csv
+
+## 9. 生成统计报告
+report
+
+## 10. 导出数据
+# 导出为CSV文件
+export csv library_export.csv
+
+# 导出为JSON文件
+export json library_export.json
+
+## 11. 退出系统
+exit
+
+
+# 预期结果说明：
+
+1. 添加图书后，系统会提示"图书添加成功"。
+2. 搜索功能会显示匹配的图书列表，包括ISBN、书名、作者、库存和借阅量。
+3. 借阅后，图书的库存会减少，借阅量会增加。
+4. 排序后，导出为csv文件会看到图书按指定方式排序。
+5. 统计报告会显示库存大于5的图书数量和最热门图书。
+6. 导出功能会在当前目录生成相应格式的文件。
+7. 退出时，系统会自动保存数据到library_data.json文件。
