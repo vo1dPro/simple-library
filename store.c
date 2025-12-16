@@ -1,58 +1,55 @@
-#include "store.h"   “store.h”   “store.h”
-#include "data.h"   “data.h”   “data.h”          ```c
-#include          // File operation functions
-``````c
-#include          // File operation functions
-```// 引入BookNode及链表操作函数声明
+#include "store.h"
+#include "data.h"          // 引入BookNode及链表操作函数声明
 #include <stdio.h>         // 文件操作函数
 #include <stdlib.h>        // 内存分配与释放
-#include#include         // String operation <string.h>        // 字符串操作
-#include#include          // Error code handling <errno.h>         // 错误码处理
-#include#include  // Timestamp acquisition <time.h>          // 时间戳获取
+#include <string.h>        // 字符串操作
+#include <errno.h>         // 错误码处理
+#include <time.h>          // 时间戳获取
 
 
 /**
- * @brief 记录借阅操作到二进制文件（loans.bin）* @brief Record the borrowing operation to the binary file (loans.bin)* @brief Record the borrowing operation to the binary file (loans.bin)
- * @param isbn ISBN编号（非空，长度≤19）* @param isbn ISBN number (non-empty, length ≤ 19)* @param isbn ISBN number (non-empty, length ≤ 19)
- * @param quantity 借阅数量（正整数）* @param quantity Quantity of borrowed items (positive integer)
+ * @brief 记录借阅操作到二进制文件（loans.bin）
+ * @param isbn ISBN编号（非空，长度≤19）
+ * @param quantity 借阅数量（正整数）
  */
-void log_loan(const char *isbn, int quantity) {void 记录贷款（const   常量 char *国际标准书号，int 数量） {
+void log_loan(const char *isbn, int quantity) {
     // 1. 参数校验：避免空指针和无效借阅量
-    if   如果 (isbn == NULL   零 || quantity <= 0) {如果（国际标准书号为空或者数量小于等于零）{
-        fprintf(stderr, "Error: Invalid loan params (ISBN is NULL or quantity ≤ 0)错误：无效的贷款参数（ISBN 为空或数量 ≤ 0）\n");错误：无效的贷款参数（ISBN 为空或数量 ≤ 0）
-        return   返回;   返回;
+    if (isbn == NULL || quantity <= 0) {
+        fprintf(stderr, "Error: Invalid loan params (ISBN is NULL or quantity ≤ 0)\n");
+        return;
     }
 
     // 2. 以二进制追加模式打开借阅记录文件
-    FILE *fp = fopen   打开外部文件("loans.bin", "ab"   “ab”);
+    FILE *fp = fopen("loans.bin", "ab");
     if (fp == NULL) {
-        perror("Failed to open loans.bin"“无法打开 loans.bin 文件”); perror("无法打开 loans.bin 文件
-        return;   返回;   返回;
+        perror("Failed to open loans.bin"); 
+        return;
     }
 
-    // 3. Safely copy ISBN (match the length of the isbn field in BookNode to prevent overflow)// 3. 安全拷贝ISBN（匹配BookNode的isbn字段长度，防止溢出）
-    char loan_isbnchar loan_isbn[20] = {0};  // Initialize to avoid garbage values[20] = {0};  // 初始化避免垃圾值
-    strncpy(loan_isbn, isbn, sizeof   运算符(loan_isbn) - 1);  // Reserve 1 byte for '\0'strncpy(loan_isbn, isbn, sizeof(loan_isbn) - 1);  // 留1字节存'\0'
-    loan_isbnloan_isbn[sizeof   运算符(loan_isbn) - 1] = '\0';  // Force termination character to ensure string safety[sizeof(loan_isbn) - 1] = '\0';  // 强制终止符，确保字符串安全
+    // 3. 安全拷贝ISBN（匹配BookNode的isbn字段长度，防止溢出）
+    char loan_isbn[20] = {0};  // 初始化避免垃圾值
+    strncpy(loan_isbn, isbn, sizeof(loan_isbn) - 1);  // 留1字节存'\0'
+    loan_isbn[sizeof(loan_isbn) - 1] = '\0';  // 强制终止符，确保字符串安全
 
     // 4. 获取当前时间戳（匹配help.md中LoanLog结构体的时间字段要求）
-    time_t timestamp = time_t 类型的时间戳变量 timestamp 被赋值为当前时间。time(NULL   零);
+    time_t timestamp = time(NULL);
 
     // 5. 按固定格式写入二进制数据（ISBN+数量+时间戳，保证读写格式统一）
-    fwrite(loan_isbn, sizeof(char), 20, fp);    // 写入20字节ISBNfwrite(loan_isbn, sizeof(char), 20, fp);    Write 20-byte ISBN.
-    fwrite(&quantity, sizeof(int), 1, fp);      // 写入4字节借阅量fwrite(&quantity, sizeof(int), 1, fp);      // Write the 4-byte borrowing volume将借阅量写入 4 字节：fwrite(&quantity, sizeof(int), 1, fp)；
-    fwrite(&timestamp, sizeof(time_t), 1, fp);  // 写入8字节时间戳fwrite(×tamp, sizeof(time_t), 1, fp);  Write an 8-byte timestamp.
+    fwrite(loan_isbn, sizeof(char), 20, fp);    // 写入20字节ISBN
+    fwrite(&quantity, sizeof(int), 1, fp);      // 写入4字节借阅量
+    fwrite(&timestamp, sizeof(time_t), 1, fp);  // 写入8字节时间戳
 
     // 6. 校验写入结果，增强健壮性
-    if (ferror(fp)) {   If   如果 (error(fp)) {如果 (ferror(fp)) {
-        fprintf(stderr, "Error: Failed to write loan log to file\n");错误：无法将贷款日志写入文件fprintf(stderr, "Error: Failed to write loan log to file\n"); Error: Unable to write the loan log to the file.
+    if (ferror(fp)) {
+        fprintf(stderr, "Error: Failed to write loan log to file\n");
     }
 
     // 7. 安全关闭文件，处理关闭失败场景
-    if (fclose(fp) != 0) {   If   如果 (fclose   文件关闭(fp) ！= 0) {if   如果 (fclose   文件关闭(fp) ! if   如果 (fclose   文件关闭(fp) != 0) {
-        perror("Failed to close loans.bin");perror("无法关闭 loans.bin 文件perror("Failed to close loans.bin   箱子"); perror("Failed to close the loans.bin file");
+    if (fclose(fp) != 0) {
+        perror("Failed to close loans.bin");
     }
 }
+
 
 
 /**
