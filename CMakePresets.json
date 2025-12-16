@@ -1,17 +1,26 @@
 {
-    "version": 8,
-    "configurePresets": [
-        {
-            "name": "default",
-            "displayName": "使用工具链文件配置预设",
-            "description": "设置 Ninja 生成器、版本和安装目录",
-            "generator": "Ninja",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_TOOLCHAIN_FILE": "",
-                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}"
-            }
-        }
-    ]
+  "version": 8,
+
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "使用 Ninja 的 Debug 配置",
+      "description": "Ninja + Debug + out/build 目录",
+      "generator": "Ninja",
+
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}"
+      }
+    }
+  ],
+
+  "buildPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default"
+    }
+  ]
 }
