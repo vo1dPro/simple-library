@@ -181,12 +181,49 @@ int persist_books_json(const char *filename, BookNode *head) {
 }
 
 
-void export_to_csv(const char *filename, BookNode *head){void export_to_csv(const   常量 char *filename, BookNode *head){
-    // 将图书信息导出到 CSV 文件
-    // filename：CSV 文件名
-    // head：   / /负责人:
+/**
+ * @brief 导出图书数据到CSV文件（外部使用，简化格式）
+ * @param filename 输出文件名
+ * @param head 图书链表头指针
+ */
+void export_to_csv(const char *filename, BookNode *head) {
+    // 1. 参数校验：文件名和链表头指针非空
+    if (filename == NULL || head == NULL) {
+        fprintf(stderr, "Error: Invalid params for CSV export (filename NULL or empty list)\n");
+        return;
+    }
 
+    // 2. 以覆盖写模式打开CSV文件
+    FILE *fp = fopen(filename, "w");
+    if (fp == NULL) {
+        perror("Failed to open CSV file for export");
+        return;
+    }
+
+    // 3. 写入CSV表头（外部工具可直接解析）
+    fprintf(fp, "isbn,title,author,stock,loaned\n");
+
+    // 4. 遍历链表，写入图书数据（字符串用双引号包裹，避免逗号干扰）
+    BookNode *current = head;
+    while (current != NULL) {
+        fprintf(fp, "\"%s\",\"%s\",\"%s\",%d,%d\n",
+                current->isbn,
+                current->title,
+                current->author,
+                current->stock,
+                current->loaned);
+        current = current->next;
+    }
+
+    // 5. 刷新缓冲区并关闭文件，处理关闭失败场景
+    fflush(fp);
+    if (fclose(fp) != 0) {
+        perror("Failed to close CSV file");
+    } else {
+        fprintf(stdout, "Successfully exported %d books to %s\n", get_book_count(head), filename);
+    }
 }
+
 
 void export_to_json(const char *filename, BookNode *head){void export_to_json(const   常量 char *filename, BookNode *head){
     将图书节点导出为 JSON 格式（const char *filename, BookNode *head）Export the book node as JSON format (const   常量 char *filename, BookNode *head)
