@@ -176,6 +176,99 @@ int persist_books_json(const char *filename, BookNode *head) {
 
 
 /**
+ * @brief 从JSON文件恢复书籍信息
+ * @param filename 输入文件名
+ * @return BookNode* 恢复后的链表头指针（NULL表示失败）
+ */
+BookNode *load_books_from_json(const char *filename) {
+    // 1. 参数校验：文件名不能为空
+    if (filename == NULL) {
+        fprintf(stderr, "Error: Invalid filename (NULL pointer) for load_books_from_json\n");
+        return NULL;
+    }
+
+    // 2. 以只读模式打开JSON文件
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL) {
+        perror("Failed to open JSON file for loading");
+        return NULL;
+    }
+
+    // 3. 初始化链表头指针
+    BookNode *head = NULL;
+    char buffer[1024];  // 临时缓冲区，逐行读取JSON内容
+    int in_books_array = 0;  // 标记是否进入books数组
+    char isbn[20], title[100], author[100];
+    int stock, loaned;
+
+    // 4. 逐行解析JSON（匹配persist_books_json的输出格式）
+    while (fgets(buffer, sizeof(buffer), fp) != NULL) {
+        // 去除行尾换行符
+        buffer[strcspn(buffer, "\n")] = '\0';
+
+        // 检测是否进入books数组
+        if (strstr(buffer, "\"books\": [") != NULL) {
+            in_books_array = 1;
+            continue;
+        }
+
+        // 未进入books数组则跳过
+        if (!in_books_array) {
+            continue;
+        }
+
+        // 检测books数组结束，退出解析
+        if (strstr(buffer, "]") != NULL) {
+            break;
+        }
+
+        // 解析单本图书的字段（严格匹配persist_books_json的输出格式）
+        if (sscanf(buffer, "    {\"isbn\":\"%[^\"]\",\"title\":\"%[^\"]\",\"author\":\"%[^\"]\",\"stock\":%d,\"loaned\":%d}",
+                   isbn, title, author, &stock, &loaned) == 5) {
+            // 分配新节点内存
+            BookNode *new_node = (BookNode*)malloc(sizeof(BookNode));
+            if (new_node == NULL) {
+                perror("Failed to allocate memory for book node");
+                destroy_list(head);  // 释放已创建节点，避免内存泄漏
+                fclose(fp);
+                return NULL;
+            }
+
+            // 安全拷贝数据到新节点
+            strncpy(new_node->isbn, isbn, sizeof(new_node->isbn) - 1);
+            new_node->isbn[sizeof(new_node->isbn) - 1] = '\0';
+            strncpy(new_node->title, title, sizeof(new_node->title) - 1);
+            new_node->title[sizeof(new_node->title) - 1] = '\0';
+            strncpy(new_node->author, author, sizeof(new_node->author) - 1);
+            new_node->author[sizeof(new_node->author) - 1] = '\0';
+            new_node->stock = stock;
+            new_node->loaned = loaned;
+            new_node->next = head;  // 头插法添加到链表
+            head = new_node;
+        }
+    }
+
+    // 5. 关闭文件并处理异常
+    if (fclose(fp) != 0) {
+        perror("Failed to close JSON file");
+        destroy_list(head);
+        return NULL;
+    }
+
+    // 6. 输出加载统计
+    int book_count = 0;
+    BookNode *temp = head;
+    while (temp != NULL) {
+        book_count++;
+        temp = temp->next;
+    }
+    fprintf(stdout, "Loaded %d books from JSON file: %s\n", book_count, filename);
+
+    return head;
+}
+
+
+/**
  * @brief 导出图书数据到CSV文件（外部使用，简化格式）
  * @param filename 输出文件名
  * @param head 图书链表头指针
@@ -214,7 +307,6 @@ void export_to_csv(const char *filename, BookNode *head) {
     if (fclose(fp) != 0) {
         perror("Failed to close CSV file");
     } else {
-        // 修复bug：删除未定义的get_book_count调用，保留基础提示
         fprintf(stdout, "Successfully exported books to %s\n", filename);
     }
 }
@@ -270,7 +362,6 @@ void export_to_json(const char *filename, BookNode *head) {
     if (fclose(fp) != 0) {
         perror("Failed to close JSON file");
     } else {
-        // 修复bug：删除未定义的get_book_count调用，保留基础提示
         fprintf(stdout, "Successfully exported books to %s\n", filename);
     }
 }
