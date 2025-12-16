@@ -115,13 +115,69 @@ void load_loans(BookNode *head) {
     }
 }
 
-int persist_books_json(const char *filename, BookNode *head){int persist_books_json(const   常量 char *filename, BookNode *head){
-    FILE *file = fopen   打开外部文件(filename, "w"   “w”);FILE *file = fopen   打开外部文件(filename, "w   “w”")；
-文件 *文件 = 打开文件（文件名，"写入"）
-    if   如果 (file == NULL) {
-        return -1;   返回1;
 
+/**
+ * @brief 持久化书籍信息到JSON文件（系统内部使用，含元数据）
+ * @param filename 输出文件名（非空）
+ * @param head 图书链表头指针
+ * @return int 0=成功, -1=失败
+ */
+int persist_books_json(const char *filename, BookNode *head) {
+    // 1. 参数校验：文件名不能为空
+    if (filename == NULL) {
+        fprintf(stderr, "Error: Invalid JSON filename (NULL pointer)\n");
+        return -1;
+    }
 
+    // 2. 以覆盖写模式打开JSON文件
+    FILE *fp = fopen(filename, "w");
+    if (fp == NULL) {
+        perror("Failed to open JSON file for persistence");
+        return -1;
+    }
+
+    // 3. 写入JSON头部（含元数据，匹配help.md中持久化格式要求）
+    fprintf(fp, "{\n");
+    fprintf(fp, "  \"metadata\": {\n");
+    fprintf(fp, "    \"version\": \"1.0\",\n");
+    fprintf(fp, "    \"created\": \"%ld\"\n", (long)time(NULL));  // 时间戳（秒级）
+    fprintf(fp, "  },\n");
+    fprintf(fp, "  \"books\": [\n");
+
+    // 4. 遍历链表，写入每本图书的完整信息
+    BookNode *current = head;
+    int is_first = 1;  // 控制JSON数组逗号分隔，避免末尾多余逗号
+    while (current != NULL) {
+        if (!is_first) {
+            fprintf(fp, ",\n");
+        }
+        is_first = 0;
+
+        // 写入单本图书的JSON对象（字段与BookNode完全对应）
+        fprintf(fp, "    {\n");
+        fprintf(fp, "      \"isbn\": \"%s\",\n", current->isbn);
+        fprintf(fp, "      \"title\": \"%s\",\n", current->title);
+        fprintf(fp, "      \"author\": \"%s\",\n", current->author);
+        fprintf(fp, "      \"stock\": %d,\n", current->stock);
+        fprintf(fp, "      \"loaned\": %d\n", current->loaned);
+        fprintf(fp, "    }");
+
+        current = current->next;
+    }
+
+    // 5. 写入JSON尾部，完成结构闭合
+    fprintf(fp, "\n  ]\n");
+    fprintf(fp, "}\n");
+
+    // 6. 刷新缓冲区并关闭文件，处理关闭失败场景
+    fflush(fp);  // 确保数据完全写入磁盘
+    int close_result = fclose(fp);
+    if (close_result != 0) {
+        perror("Failed to close JSON file");
+        return -1;
+    }
+
+    return 0;  // 成功返回0
 }
 
 BookNode *load_books_from_json(const char *filename){BookNode *从 JSON 加载书籍(const   常量 字符串 *文件名) {BookNode* load_books_from_json   从 JSON 加载书籍(const   常量 char* filename) {
