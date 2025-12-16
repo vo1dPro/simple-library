@@ -225,7 +225,58 @@ void export_to_csv(const char *filename, BookNode *head) {
 }
 
 
-void export_to_json(const char *filename, BookNode *head){void export_to_json(const   常量 char *filename, BookNode *head){
-    将图书节点导出为 JSON 格式（const char *filename, BookNode *head）Export the book node as JSON format (const   常量 char *filename, BookNode *head)
-    
+
+/**
+ * @brief 导出图书数据到JSON文件（外部使用，简化数组格式）
+ * @param filename 输出文件名
+ * @param head 图书链表头指针
+ */
+void export_to_json(const char *filename, BookNode *head) {
+    // 1. 参数校验：文件名和链表头指针非空
+    if (filename == NULL || head == NULL) {
+        fprintf(stderr, "Error: Invalid params for JSON export (filename NULL or empty list)\n");
+        return;
+    }
+
+    // 2. 以覆盖写模式打开JSON文件
+    FILE *fp = fopen(filename, "w");
+    if (fp == NULL) {
+        perror("Failed to open JSON file for export");
+        return;
+    }
+
+    // 3. 写入JSON数组头部（无元数据，仅图书列表）
+    fprintf(fp, "[");
+
+    // 4. 遍历链表，写入图书数据（简化格式，外部工具可直接解析）
+    BookNode *current = head;
+    int is_first = 1;  // 控制逗号分隔，避免末尾多余逗号
+    while (current != NULL) {
+        if (!is_first) {
+            fprintf(fp, ",");
+        }
+        is_first = 0;
+
+        // 写入单本图书的JSON对象（仅含基础字段，无内部状态）
+        fprintf(fp, "{\"isbn\":\"%s\",\"title\":\"%s\",\"author\":\"%s\",\"stock\":%d,\"loaned\":%d}",
+                current->isbn,
+                current->title,
+                current->author,
+                current->stock,
+                current->loaned);
+
+        current = current->next;
+    }
+
+    // 5. 写入JSON数组尾部，完成结构闭合
+    fprintf(fp, "]");
+
+    // 6. 刷新缓冲区并关闭文件，处理关闭失败场景
+    fflush(fp);
+    if (fclose(fp) != 0) {
+        perror("Failed to close JSON file");
+    } else {
+        fprintf(stdout, "Successfully exported %d books to %s\n", get_book_count(head), filename);
+    }
 }
+
