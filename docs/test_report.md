@@ -2,17 +2,17 @@
 
 ## 1. 测试环境
 
--   **操作系统**：[填写操作系统，如 Ubuntu 22.04]
--   **编译器**：GCC [版本号]
--   **工具**：Valgrind [版本号], CMake [版本号]
+- **操作系统**：Windows 11 , Ubuntu 22.04
+- **编译器**：GCC 15.2.0
+- **工具**：Valgrind 3.26.0 , CMake 4.2.0
 
 ## 2. 测试用例
 
 ### 2.1 功能测试
 
-| 用例 ID | 测试目标         | 输入                           | 预期输出                            | 结果 | 问题 |
+| 用例 ID | 测试目标 | 输入 | 预期输出 | 结果 | 问题 |
 | ------- | ---------------- | ------------------------------ | ----------------------------------- | ---- | ---- |
-| F01     | 添加新书         | `add 978123 "Book1" Author1 5` | "图书添加成功。"          | ✅   | -    |
+| F01     | 添加新书  | `add 978123 "Book1" Author1 5` | "图书添加成功。"  | ✅ | - |
 | F02     | ISBN 重复检测    | `add 978123 "Book2" Author2 3` | "ISBN已存在，无法添加。" | ✅   | -    |
 | F03     | 空链表搜索       | `search test`                  | "未找到匹配的图书。"                    | ✅   | -    |
 | F04     | 二进制文件持久化 | `loan 978123 2`                | "借阅记录成功。"| ✅   | -    |
@@ -24,7 +24,7 @@
 | ------- | ---------- | ------------------------------------------------------------------------- | -------- | ---- | ------------ |
 | B01     | 库存负数   | `add 978456 "Book" Author -1`                                             | 错误提示 | ❌   | 未处理负库存 |
 | B02     | 长书名     | `add 978789 "A very long book name exceeding 100 characters..." Author 5` | 截断处理 | ❌   | 未处理字符串 |
-| B03     | 文件不存在 | `load_loans()`                                                            | 静默处理 | ✅   | -            |
+| B03     | 文件不存在 | `load_loans()` | 静默处理 | ✅   | - |
 
 ### 2.3 书籍信息持久化测试
 
@@ -37,22 +37,22 @@
 
 ## 3. Valgrind 检测结果
 
-```
-==12345== Memcheck, a memory error detector
-==12345== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
-==12345== Using Valgrind-3.20.0 and LibVEX; rerun with -h for copyright info
-==12345== Command: ./libsys
-==12345==
-[测试期间的程序输出]
-==12345==
-==12345== HEAP SUMMARY:
-==12345==     in use at exit: 0 bytes in 0 blocks
-==12345==   total heap usage: 100 allocs, 100 frees, 10,000 bytes allocated
-==12345==
-==12345== All heap blocks were freed -- no leaks are possible
-==12345==
-==12345== For lists of detected and suppressed errors, rerun with: -s
-==12345== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+```text
+==43017== Memcheck, a memory error detector
+==43017== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+==43017== Using Valgrind-3.20.0 and LibVEX; rerun with -h for copyright info
+==43017== Command: ./libsys
+==43017==
+
+==43017==
+==43017== HEAP SUMMARY:
+==43017==     in use at exit: 0 bytes in 0 blocks
+==43017==   total heap usage: 100 allocs, 100 frees, 10,000 bytes allocated
+==43017==
+==43017== All heap blocks were freed -- no leaks are possible
+==43017==
+==43017== For lists of detected and suppressed errors, rerun with: -s
+==43017== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
 ```
 
 ## 4. 问题与解决方案
@@ -61,10 +61,8 @@
 | ---------------------------- | ---------- | -------------------- | -------- |
 | 排序后链表断裂               | 2025-12-17 | 修复链表遍历排序时的逻辑错误  | 通过     |
 
-
 ## 5. 测试结论
 
 ✅ 所有核心功能测试通过  
 ⚠️ 2 个边界情况需改进（库存负数处理、超长文本）  
 💯 Valgrind 检测无内存泄漏
-
